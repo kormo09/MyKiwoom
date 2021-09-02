@@ -16,7 +16,7 @@
 - updater_short.py는 단기 전략용 DB 업데이터입니다.
 - updater_mid.py는 중기 전략용 DB 업데이터입니다.
 - updater_long.py는 장기 전략용 DB 업데이터입니다.
-2. tick 폴더내에는 초당 틱데이터 수집코드 및 백테스터 두가지, 백파인더가 포함되어 있습니다.
+2. tick 폴더내에는 초당 틱데이터 수집코드, 초단타용 백테스터, 백파인더가 포함되어 있습니다.
 - backtester_tick.py는 초단타 전략을 백테스트하고 변수값을 최적화하는 코드입니다.
 
 ![화면 캡처 2021-09-02 112845](https://user-images.githubusercontent.com/78009194/131772294-f46c5052-94ae-4f72-84ad-fac92fa669a3.png)
