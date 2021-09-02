@@ -88,10 +88,10 @@
 
 ![화면 캡처 2021-09-02 113057](https://user-images.githubusercontent.com/78009194/131772303-5752db0e-721b-4b6c-99d7-f82dfcc1e319.png)
 
-3. utility/setting.py 파일에 각종 경로 설정
+3. utility/setting.py 파일에 각종 경로 및 모니터 가로 해상도 설정
 
-![화면 캡처 2021-09-02 113118](https://user-images.githubusercontent.com/78009194/131772304-da694154-331f-4e69-ac16-3de38e1c6b2a.png)
-
+![화면 캡처 2021-09-03 063854](https://user-images.githubusercontent.com/78009194/131919960-f3d84833-df02-4120-b703-1115eef5a709.png)
+- 모니터 가로 해상도 설정은 해상도가 낮은 사용자를 위한 임시방편입니다.
 4. 모든 배치 파일을 열어서 두번째줄 경로 수정
 
 ![화면 캡처 2021-09-02 113149](https://user-images.githubusercontent.com/78009194/131772307-18bddd70-23cc-4cb2-9e43-a188c56a3e25.png)
@@ -108,13 +108,10 @@
 - 시스템설정탭에 "장운영상태" 버튼을 클릭하면 수동으로 장운영상태로 변경됩니다.
 - 프로그램은 구동 후 10분 동안 장운영알림이 오지 않으면 프로그램 및 컴퓨터를 종료하도록 설정되어 있으니
 - 테스트용으로 구동 시 반드시 장운영상태로 만들어 종료되지 않도록 하십시오.
-7. 시스템설정탭으로 가서 텔레그램을 설정합니다.
+7. 시스템설정탭에서 텔레그램 토큰 및 사용자 아이디를 설정합니다.
 
 ![화면_캡처_2021-08-26_195057](https://user-images.githubusercontent.com/78009194/131397719-f53e2355-149f-4495-b21b-0f91b7d38eb5.png)
-- 모니터 해상도가 작아서 안보이시는 분은
-- trader/window.py self.setWindowFlags(Qt.FramelessWindowHint)
-- trader/window.py self.ButtonClicked_4(2)
-- 두 부분을 주석처리하고 실행하시면 UI를 움직일 수 있습니다.
+
 8. 시스템종료 버튼을 눌러 프로그램을 종료합니다.
 9. 키움증권 HTS를 실행하여 조건검색식 0번 1번 두개를 만듭니다.
 - 0번은 시가총액10조원이하, 관리종목 제외, 거래대금상위 100종목
