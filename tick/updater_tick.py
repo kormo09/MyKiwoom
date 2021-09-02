@@ -49,15 +49,15 @@ class UpdaterTick:
         d = self.str_tday + d
         if code not in self.dict_df.keys():
             self.dict_df[code] = pd.DataFrame(
-                [[c, o, per, hlmp, dm, dm, ch, vp, vitime, vid5, s1jr, s2jr, b1jr, b2jr, s1hg, s2hg, b1hg, b2hg]],
-                columns=['현재가', '시가', '등락율', '고저평균대비등락율', '거래대금', '누적거래대금', '체결강도', '전일거래량대비',
-                         'VI발동시간', '상승VID5가격', '매도1잔량', '매도2잔량', '매수1잔량', '매수2잔량', '매도1호가', '매도2호가',
-                         '매수1호가', '매수2호가'],
+                [[c, o, h, low, per, hlmp, dm, dm, ch, vp, vitime, vid5, s1jr, s2jr, b1jr, b2jr, s1hg, s2hg, b1hg, b2hg]],
+                columns=['현재가', '시가', '고가', '저가', '등락율', '고저평균대비등락율', '거래대금', '누적거래대금', '체결강도',
+                         '전일거래량대비', 'VI발동시간', '상승VID5가격', '매도1잔량', '매도2잔량', '매수1잔량', '매수2잔량',
+                         '매도1호가', '매도2호가', '매수1호가', '매수2호가'],
                 index=[d])
         else:
             sm = int(dm - self.dict_df[code]['누적거래대금'][-1])
             self.dict_df[code].at[d] = \
-                c, o, per, hlmp, sm, dm, ch, vp, vitime, vid5, s1jr, s2jr, b1jr, b2jr, s1hg, s2hg, b1hg, b2hg
+                c, o, h, low, per, hlmp, sm, dm, ch, vp, vitime, vid5, s1jr, s2jr, b1jr, b2jr, s1hg, s2hg, b1hg, b2hg
         if now() > self.time_info:
             self.UpdateInfo(receiv_time)
             self.time_info = timedelta_sec(60)
@@ -68,7 +68,7 @@ class UpdaterTick:
 
     def PutTickData(self):
         for code in list(self.dict_df.keys()):
-            columns = ['현재가', '시가', '거래대금', '누적거래대금', '상승VID5가격',
+            columns = ['현재가', '시가', '고가', '저가', '거래대금', '누적거래대금', '상승VID5가격',
                        '매도1잔량', '매도2잔량', '매수1잔량', '매수2잔량', '매도1호가', '매도2호가', '매수1호가', '매수2호가']
             self.dict_df[code][columns] = self.dict_df[code][columns].astype(int)
         self.queryQ.put(self.dict_df)
@@ -80,7 +80,7 @@ class UpdaterTick:
             return
         for code in list(self.dict_df.keys()):
             if code in codes:
-                columns = ['현재가', '시가', '거래대금', '누적거래대금', '상승VID5가격',
+                columns = ['현재가', '시가', '고가', '저가', '거래대금', '누적거래대금', '상승VID5가격',
                            '매도1잔량', '매도2잔량', '매수1잔량', '매수2잔량', '매도1호가', '매도2호가', '매수1호가', '매수2호가']
                 self.dict_df[code][columns] = self.dict_df[code][columns].astype(int)
             else:
