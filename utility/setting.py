@@ -9,8 +9,8 @@ db_tick = f'{db_path}/tick.db'
 db_backtest = f'{db_path}/backtest.db'
 db_backfind = f'{db_path}/backfind.db'
 
-screen_siza = 3440
-resize = round(screen_siza / 3440, 4)
+screen_size = 3440
+resize = round(screen_size / 3440, 4)
 
 qfont1 = QFont()
 qfont1.setFamily('나눔고딕')
