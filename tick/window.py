@@ -28,21 +28,21 @@ class Window(QtWidgets.QMainWindow):
             textedit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             textedit.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             textedit.setStyleSheet(style_bc_dk)
-            textedit.setFont(qfont12)
+            textedit.setFont(qfont1)
             return textedit
 
-        self.setFont(qfont12)
+        self.setFont(qfont1)
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setGeometry(0, 0, 692, 292)
+        self.setGeometry(int(0 * resize), int(0 * resize), int(692 * resize), int(292 * resize))
 
         self.lg_tabWidget = QtWidgets.QTabWidget(self)
-        self.lg_tabWidget.setGeometry(5, 5, 682, 282)
+        self.lg_tabWidget.setGeometry(int(5 * resize), int(5 * resize), int(682 * resize), int(282 * resize))
         self.lg_tab = QtWidgets.QWidget()
         self.lg_textEdit = setTextEdit(self.lg_tab)
-        self.lg_textEdit.setGeometry(5, 5, 668, 242)
+        self.lg_textEdit.setGeometry(int(5 * resize), int(5 * resize), int(668 * resize), int(242 * resize))
         self.lg_tabWidget.addTab(self.lg_tab, '틱데이터 저장')
         self.info_label = QtWidgets.QLabel(self)
-        self.info_label.setGeometry(105, 1, 500, 30)
+        self.info_label.setGeometry(int(105 * resize), int(1 * resize), int(500 * resize), int(30 * resize))
 
         self.writer = Writer()
         self.writer.data0.connect(self.UpdateTexedit)

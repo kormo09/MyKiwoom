@@ -9,15 +9,18 @@ db_tick = f'{db_path}/tick.db'
 db_backtest = f'{db_path}/backtest.db'
 db_backfind = f'{db_path}/backfind.db'
 
-qfont12 = QFont()
-qfont12.setFamily('나눔고딕')
-qfont12.setPixelSize(12)
-qfont13 = QFont()
-qfont13.setFamily('나눔고딕')
-qfont13.setPixelSize(13)
-qfont14 = QFont()
-qfont14.setFamily('나눔고딕')
-qfont14.setPixelSize(14)
+screen_siza = 3440
+resize = round(screen_siza / 3440, 4)
+
+qfont1 = QFont()
+qfont1.setFamily('나눔고딕')
+qfont1.setPixelSize(int(12 * resize))
+qfont2 = QFont()
+qfont2.setFamily('나눔고딕')
+qfont2.setPixelSize(int(13 * resize))
+qfont3 = QFont()
+qfont3.setFamily('나눔고딕')
+qfont3.setPixelSize(int(14 * resize))
 
 sn_brrq = 1000
 sn_brrd = 1001
