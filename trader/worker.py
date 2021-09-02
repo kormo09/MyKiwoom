@@ -1300,19 +1300,14 @@ class Worker:
             self.workerQ.put([sn_vijc, code])
 
     def UpdateJango(self, code, name, c, o, h, low, per, ch):
-        try:
-            pc = self.dict_df['잔고목록']['현재가'][code]
-        except IndexError:
-            return
-
+        self.lock.acquire()
+        pc = self.dict_df['잔고목록']['현재가'][code]
         if pc != c:
-            self.lock.acquire()
             bg = self.dict_df['잔고목록']['매입금액'][code]
             jc = self.dict_df['잔고목록']['보유수량'][code]
             pg, sg, sp = self.GetPgSgSp(bg, jc * c)
             columns = ['현재가', '수익률', '평가손익', '평가금액', '시가', '고가', '저가']
             self.dict_df['잔고목록'].at[code, columns] = c, sp, sg, pg, o, h, low
-            self.lock.release()
 
             if self.dict_df['잔고목록']['전략구분'][code] == '단타':
                 self.stgtQ.put([code, name, per, sp, jc, ch, c])
@@ -1322,6 +1317,7 @@ class Worker:
                 self.stgmQ.put([code, name, jc, sp, c])
             elif self.dict_df['잔고목록']['전략구분'][code] == '단기':
                 self.stgsQ.put([code, name, jc, sp, c])
+        self.lock.release()
 
     # noinspection PyMethodMayBeStatic
     def GetPgSgSp(self, bg, cg):
