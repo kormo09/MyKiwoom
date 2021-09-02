@@ -11,9 +11,9 @@
 - download_daydata.py는 일봉데이터를 다운로드할 수 있는 코드이며
 - 두개의 계정으로 각각 본서버, 모의서버를 접속해서 동시에 4개씩 TR조회할 수 있습니다.
 - backtester_short.py는 단기 전략용 백테스터입니다.
-- backtester_mid.py는 단기 전략용 백테스터입니다.
-- backtester_long.py는 중기 전략용 백테스터입니다.
-- updater_short.py는 장기 전략용 DB 업데이터입니다.
+- backtester_mid.py는 중기 전략용 백테스터입니다.
+- backtester_long.py는 장기 전략용 백테스터입니다.
+- updater_short.py는 단기 전략용 DB 업데이터입니다.
 - updater_mid.py는 중기 전략용 DB 업데이터입니다.
 - updater_long.py는 장기 전략용 DB 업데이터입니다.
 2. tick 폴더내에는 초당 틱데이터 수집코드 및 백테스터 두가지, 백파인더가 포함되어 있습니다.
