@@ -45,7 +45,7 @@
 - 수동으로 로그인을 한번 한 후에 재실행하시면 오류가 해결됩니다.
 4. trader 폴더는 자동매매 코드입니다.
 - 화면해상도 3440 x 1440에 최적화되어 있습니다.
-- 실시간 주식체결 수신부에서 BuyStrategy, SellStrategy 중 전략과 관련된 코드는 비공개상태입니다.
+- BuyStrategy, SellStrategy 중 전략과 관련된 코드는 비공개상태입니다.
 - ![화면 캡처 2021-09-02 112945](https://user-images.githubusercontent.com/78009194/131772301-8d731154-a910-49eb-8da4-0e7d8ad5037c.png)
 5. utility 폴더는 각종 설정 및 static 함수 파일입니다.
 - UI 색상 및 글꼴을 변경하실려면 setting.py를 변경하시면 됩니다.
