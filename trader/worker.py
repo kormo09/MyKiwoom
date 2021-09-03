@@ -306,6 +306,7 @@ class Worker:
                         continue
                     elif len(work) in [2, 4]:
                         self.UpdateRealreg(work)
+                        continue
                 elif type(work) == str:
                     self.RunWork(work)
 
