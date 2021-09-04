@@ -77,18 +77,6 @@ class Worker:
             '초당호가잔량수신횟수': 0,
             'TR제한수신횟수': 0,
 
-            '평균시간': 0,
-            '등락율상한': 0.,
-            '고저평균대비등락율하한': 0.,
-            '누적거래대금하한': 0,
-            '체결강도하한': 0.,
-            '거래대금하한': 0,
-            '전일거래량대비하한': 0.,
-            '체결강도차이': 0.,
-            '거래대금차이': 0,
-            '전일거래량대비차이': 0.,
-            '청산시간': 0,
-
             '스레드': 0,
             '시피유': 0.,
             '메모리': 0.
@@ -215,15 +203,6 @@ class Worker:
         self.dict_bool['테스트'] = df['테스트'][0]
         self.dict_bool['모의투자'] = df['모의투자'][0]
         self.dict_bool['알림소리'] = df['알림소리'][0]
-        self.dict_intg['체결강도차이'] = df['체결강도차이'][0]
-        self.dict_intg['거래대금차이'] = df['거래대금차이'][0]
-        self.dict_intg['평균시간'] = df['평균시간'][0]
-        self.dict_intg['청산시간'] = df['청산시간'][0]
-        self.dict_intg['체결강도하한'] = df['체결강도하한'][0]
-        self.dict_intg['전일거래량대비하한'] = df['전일거래량대비하한'][0]
-        self.dict_intg['누적거래대금하한'] = df['누적거래대금하한'][0]
-        self.dict_intg['등락율상한'] = df['등락율상한'][0]
-        self.dict_intg['고저평균대비등락율하한'] = df['고저평균대비등락율하한'][0]
         self.windowQ.put([ui_num['단타설정'], df])
         self.windowQ.put([2, f"테스트모드 {self.dict_bool['테스트']}"])
         self.windowQ.put([2, f"모의투자 {self.dict_bool['모의투자']}"])
@@ -341,8 +320,11 @@ class Worker:
                     self.RemoveRealreg()
                 if int(strf_time('%H%M%S')) > 152500 and not self.dict_bool['잔고청산']:
                     self.JangoChungsan()
+                """
+                단기, 중기, 장기 전략 완성 후 활성화
                 if int(strf_time('%H%M%S')) > 152500 and not self.dict_bool['단중장기매수주문']:
                     self.PutLongMidShortBuy()
+                """
             if self.dict_intg['장운영상태'] == 8:
                 if not self.dict_bool['DB저장']:
                     self.SaveDatabase()
@@ -431,19 +413,18 @@ class Worker:
             name = '코스피종합'
         elif rreg[1] == '101':
             name = '코스닥종합'
+        elif rreg[1] == 'ALL':
+            name = 'ALL'
         elif ';' in rreg[1]:
             count = len(rreg[1].split(';'))
             name = f'종목갯수 {count}'
-        elif rreg[1] != '' and rreg[1] != ' ' and rreg[1] != 'ALL':
+        elif rreg[1] != ' ':
             name = self.dict_name[rreg[1]]
 
         sn = rreg[0]
         if len(rreg) == 2:
             self.ocx.dynamicCall('SetRealRemove(QString, QString)', rreg)
-            if sn == 'ALL' and rreg[1] == 'ALL':
-                self.windowQ.put([1, f'실시간 알림 중단 완료 - 모든 실시간 데이터 수신 중단'])
-            else:
-                self.windowQ.put([1, f'실시간 알림 중단 완료 - [{sn}] {name}'])
+            self.windowQ.put([1, f'실시간 알림 중단 완료 - [{sn}] {name}'])
         elif len(rreg) == 4:
             ret = self.ocx.dynamicCall('SetRealReg(QString, QString, QString, QString)', rreg)
             result = '완료' if ret == 0 else '실패'

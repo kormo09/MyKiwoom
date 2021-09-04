@@ -575,16 +575,13 @@ class Window(QtWidgets.QMainWindow):
         self.sgl_tableWidget.setGeometry(int(5 * resize), int(104 * resize), int(668 * resize), int(965 * resize))
 
         self.dict_intg = {
-            '평균시간': 0,
-            '등락율상한': 0.,
-            '고저평균대비등락율하한': 0.,
-            '거래대금하한': 0,
-            '누적거래대금하한': 0,
+            '체결강도차이': 0.,
+            '거래대금차이': 0,
             '체결강도하한': 0.,
             '전일거래량대비하한': 0.,
-            '거래대금차이': 0,
-            '체결강도차이': 0.,
-            '전일거래량대비차이': 0.
+            '누적거래대금하한': 0,
+            '등락율상한': 0.,
+            '고저평균대비등락율하한': 0.
         }
 
         self.dict_code = {}
@@ -994,8 +991,6 @@ class Window(QtWidgets.QMainWindow):
             df = data[1]
             self.dict_intg['체결강도차이'] = df['체결강도차이'][0]
             self.dict_intg['거래대금차이'] = df['거래대금차이'][0]
-            self.dict_intg['평균시간'] = df['평균시간'][0]
-            self.dict_intg['청산시간'] = df['청산시간'][0]
             self.dict_intg['체결강도하한'] = df['체결강도하한'][0]
             self.dict_intg['전일거래량대비하한'] = df['전일거래량대비하한'][0]
             self.dict_intg['누적거래대금하한'] = df['누적거래대금하한'][0]
