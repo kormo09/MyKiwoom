@@ -1110,6 +1110,7 @@ class Worker:
                     if code in self.list_short:
                         self.stgsQ.put([code, c, o, per, d])
                 """
+
                 if code in self.dict_df['잔고목록'].index:
                     self.UpdateJango(code, name, c, o, h, low, per, ch)
                 self.UpdateChartHoga(code, name, c, o, h, low, per, ch, v, d, prec)
