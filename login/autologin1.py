@@ -22,12 +22,6 @@ class Window(QtWidgets.QMainWindow):
         self.ocx.dynamicCall('CommConnect()')
         while not self.bool_connected:
             pythoncom.PumpWaitingMessages()
-        self.EventLoop()
-
-    # noinspection PyMethodMayBeStatic
-    def EventLoop(self):
-        while True:
-            time.sleep(1)
 
     def OnEventConnect(self, err_code):
         if err_code == 0:
@@ -40,7 +34,6 @@ class Window(QtWidgets.QMainWindow):
         self.ocx.dynamicCall('KOA_Functions(QString, QString)', 'ShowAccountWindow', '')
         print(' 자동 로그인 설정 완료\n')
         print(' 자동 로그인 설정용 프로세스 종료 중 ...')
-        sys.exit()
 
 
 if __name__ == '__main__':
