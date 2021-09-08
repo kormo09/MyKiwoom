@@ -5,23 +5,16 @@ import pandas as pd
 from threading import Thread
 from utility.setting import db_stg
 
-bot = ''
-user_id = 0
 try:
     connn = sqlite3.connect(db_stg)
     df_tg = pd.read_sql('SELECT * FROM telegram', connn)
     connn.close()
 except pd.io.sql.DatabaseError:
-    pass
+    bot = ''
+    user_id = 0
 else:
     bot = df_tg['str_bot'][0]
     user_id = int(df_tg['int_id'][0])
-
-
-def thread_decorator(func):
-    def wrapper(*args):
-        Thread(target=func, args=args, daemon=True).start()
-    return wrapper
 
 
 def telegram_msg(text):
@@ -32,6 +25,12 @@ def telegram_msg(text):
             telegram.Bot(bot).sendMessage(chat_id=user_id, text=text)
         except Exception as e:
             print(f'텔레그램 설정 오류 알림 - telegram_msg {e}')
+
+
+def thread_decorator(func):
+    def wrapper(*args):
+        Thread(target=func, args=args, daemon=True).start()
+    return wrapper
 
 
 def now():

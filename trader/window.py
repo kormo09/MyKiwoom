@@ -154,7 +154,15 @@ class Window(QtWidgets.QMainWindow):
                 tableWidget.setColumnWidth(8, int(65 * resize))
                 tableWidget.setColumnWidth(9, int(65 * resize))
             else:
-                if colcount >= 7:
+                if columns[0] in ['기간', '일자']:
+                    tableWidget.setColumnWidth(0, int(100 * resize))
+                    tableWidget.setColumnWidth(1, int(100 * resize))
+                    tableWidget.setColumnWidth(2, int(100 * resize))
+                    tableWidget.setColumnWidth(3, int(100 * resize))
+                    tableWidget.setColumnWidth(4, int(100 * resize))
+                    tableWidget.setColumnWidth(5, int(66 * resize))
+                    tableWidget.setColumnWidth(6, int(100 * resize))
+                else:
                     tableWidget.setColumnWidth(0, int(126 * resize))
                     tableWidget.setColumnWidth(1, int(90 * resize))
                     tableWidget.setColumnWidth(2, int(90 * resize))

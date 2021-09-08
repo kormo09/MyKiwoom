@@ -234,7 +234,6 @@ class Worker:
             self.windowQ.put([ui_num['체결목록'], self.dict_df['체결목록']])
         if len(self.dict_df['거래목록']) > 0:
             self.windowQ.put([ui_num['거래목록'], self.dict_df['거래목록']])
-            self.UpdateTotaltradelist()
 
         self.windowQ.put([1, '시스템 명령 실행 알림 - 데이터베이스 정보 불러오기 완료'])
         self.dict_bool['DB로딩'] = True
@@ -729,6 +728,9 @@ class Worker:
                 self.windowQ.put([1, '시스템 명령 오류 알림 - 오류가 발생하여 계좌평가결과를 재조회합니다.'])
                 time.sleep(3.35)
 
+        if len(self.dict_df['거래목록']) > 0:
+            self.UpdateTotaltradelist()
+
         if len(self.dict_df['잔고목록']) > 0:
             count = len(self.dict_df['잔고목록'])
             k = 0
@@ -904,7 +906,6 @@ class Worker:
 
     def SaveDatabase(self):
         self.windowQ.put([2, '일별거래목록 저장'])
-        self.queryQ.put([self.dict_df['잔고목록'], 'jangolist', 'replace'])
         if len(self.dict_df['거래목록']) > 0:
             df = self.dict_df['실현손익'][['총매수금액', '총매도금액', '총수익금액', '총손실금액', '수익률', '수익금합계']].copy()
             self.queryQ.put([df, 'totaltradelist', 'append'])
@@ -1485,6 +1486,7 @@ class Worker:
         columns = ['매입가', '현재가', '평가손익', '매입금액']
         self.dict_df['잔고목록'][columns] = self.dict_df['잔고목록'][columns].astype(int)
         self.dict_df['잔고목록'].sort_values(by=['매입금액'], inplace=True)
+        self.queryQ.put([self.dict_df['잔고목록'], 'jangolist', 'replace'])
 
         if self.dict_bool['알림소리']:
             self.soundQ.put(f'{name} {int(oc)}주를 {og}하였습니다')
