@@ -50,7 +50,7 @@ class Worker:
             '잔고평가': pd.DataFrame(columns=columns_tj),
             '잔고목록': pd.DataFrame(columns=columns_jg),
             '체결목록': pd.DataFrame(columns=columns_cj),
-            'TRDF': None
+            'TRDF': pd.DataFrame(columns=[])
         }
         self.dict_intg = {
             '장운영상태': 1,
@@ -1568,7 +1568,7 @@ class Worker:
         if '종목코드' in kwargs.keys() and kwargs['종목코드'] != '':
             self.dict_strg['TR종목명'] = self.dict_name[kwargs['종목코드']]
         else:
-            self.dict_strg['TR종목명'] = ''
+            self.dict_strg['TR종목명'] = None
         trcode = args[0].lower()
         liness = self.ReadEnc(trcode)
         self.dict_item = self.ParseDat(trcode, liness)
