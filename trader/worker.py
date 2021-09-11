@@ -369,11 +369,6 @@ class Worker:
         stg = gubun[:2]
         og = gubun[2:]
 
-        if og == '매수' and code in self.dict_buy.keys():
-            return
-        elif og == '매도' and code in self.dict_sell.keys():
-            return
-
         if og == '매수':
             if self.dict_intg[f'{stg}추정예수금'] < oc * c:
                 cond = (self.dict_df['체결목록']['주문구분'] == '시드부족') & (self.dict_df['체결목록'].index == code)
@@ -383,6 +378,14 @@ class Worker:
                     self.dict_buy[code] = stg
                     self.UpdateChejanData(code, name, '체결', '시드부족', c, c, oc, 0,
                                           strf_time('%Y%m%d%H%M%S%f'), strf_time('%Y%m%d%H%M%S%f'))
+                if stg == '단타':
+                    self.stgtQ.put(['매수완료', code])
+                elif stg == '단기':
+                    self.stgsQ.put(['매수완료', code])
+                elif stg == '중기':
+                    self.stgmQ.put(['매수완료', code])
+                elif stg == '장기':
+                    self.stglQ.put(['매수완료', code])
                 return
             else:
                 self.dict_intg[f'{stg}추정예수금'] -= oc * c
