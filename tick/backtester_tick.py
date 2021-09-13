@@ -88,10 +88,13 @@ class BackTesterTick:
         conn.close()
 
     def BuyTerm(self):
-        if self.code not in self.df_mt['거래대금상위100'][self.index]:
-            self.ccond = 0
-        else:
-            self.ccond += 1
+        try:
+            if self.code not in self.df_mt['거래대금상위100'][self.index]:
+                self.ccond = 0
+            else:
+                self.ccond += 1
+        except KeyError:
+            return False
         if self.ccond < self.avgtime:
             return False
         # 전략 비공개
