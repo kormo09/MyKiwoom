@@ -371,7 +371,7 @@ class Worker:
 
         if og == '매수':
             if self.dict_intg[f'{stg}추정예수금'] < oc * c:
-                cond = (self.dict_df['체결목록']['주문구분'] == '시드부족') & (self.dict_df['체결목록'].index == code)
+                cond = (self.dict_df['체결목록']['주문구분'] == '시드부족') & (self.dict_df['체결목록']['종목명'] == name)
                 df = self.dict_df['체결목록'][cond]
                 if len(df) == 0 or \
                         (len(df) > 0 and now() > timedelta_sec(180, strp_time('%Y%m%d%H%M%S%f', df['체결시간'][0]))):
