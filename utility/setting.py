@@ -2,10 +2,10 @@ from PyQt5.QtGui import QFont, QColor
 
 openapi_path = 'D:/OpenAPI'
 system_path = 'D:/PythonProjects/MyKiwoom'
-db_path = 'D:/PythonProjects/MyKiwoom/db'
+db_path = 'D:/PythonProjects/MyKiwoom/database'
 db_stg = f'{db_path}/stg.db'
 db_day = f'{db_path}/day.db'
-db_tick = f'{db_path}/tick.db'
+db_tick = f'{db_path}/backtester.db'
 db_backtest = f'{db_path}/backtest.db'
 db_backfind = f'{db_path}/backfind.db'
 

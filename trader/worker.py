@@ -306,7 +306,7 @@ class Worker:
                     if not self.dict_bool['VI발동해제등록']:
                         self.ViRealreg()
                 if now() > self.dict_time['휴무종료']:
-                    self.SysExit(True)
+                    self.SysExit()
             if self.dict_intg['장운영상태'] == 3:
                 if not self.dict_bool['실시간조건검색시작']:
                     self.ConditionSearchStart()
@@ -327,7 +327,7 @@ class Worker:
             if self.dict_intg['장운영상태'] == 8:
                 if not self.dict_bool['DB저장']:
                     self.SaveDatabase()
-                    self.SysExit(False)
+                    self.SysExit()
 
             if now() > self.dict_time['호가잔고']:
                 self.PutHogaJanngo()
@@ -579,7 +579,7 @@ class Worker:
         elif work == '시스템 종료':
             if not self.dict_bool['DB저장']:
                 self.SaveDatabase()
-            self.SysExit(False)
+            self.SysExit()
         elif work == '/당일체결목록':
             if len(self.dict_df['체결목록']) > 0:
                 self.teleQ.put(self.dict_df['체결목록'])
@@ -1676,10 +1676,8 @@ class Worker:
             enc_data['input'].append(fields) if block_type == 'input' else enc_data['output'].append(fields)
         return enc_data
 
-    def SysExit(self, gubun):
+    def SysExit(self):
         self.windowQ.put([2, '시스템 종료'])
-        if gubun:
-            os.system('shutdown /s /t 60')
         self.teleQ.put('10초 후 시스템을 종료합니다.')
         if self.dict_bool['알림소리']:
             self.soundQ.put('십초 후 시스템을 종료합니다.')
