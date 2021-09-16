@@ -82,7 +82,7 @@ class UpdaterShort:
             df = self.Block_Request('opt10081', 종목코드=code, 기준일자=self.str_tday, 수정주가구분=1,
                                     output='주식일봉차트조회', next=0)
             self.lock.release()
-            if len(df) < 2:
+            if len(df) < AVGPERIOD:
                 continue
             df = df.set_index('일자')
             df = df[::-1]
