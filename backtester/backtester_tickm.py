@@ -277,6 +277,8 @@ class Total:
                 tsg = int(df_back['수익금'].sum())
                 onedaycount = round(tc / TOTALTIME, 2)
                 onegm = int(BATTING * onedaycount * avghold)
+                if onegm < BATTING:
+                    onegm = BATTING
                 tsp = round(tsg / onegm * 100, 4)
                 text = [self.gap_ch, self.avg_time, self.gap_sm, self.ch_low, self.dm_low, self.per_high, self.cs_per]
                 print(f' {text}')

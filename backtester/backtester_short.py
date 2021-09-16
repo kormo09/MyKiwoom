@@ -224,6 +224,8 @@ class Total:
                 tsg = int(df_back['수익금'].sum())
                 onedaycount = round(tc / self.totalday, 2)
                 onegm = int(BATTING * onedaycount * avghold)
+                if onegm < BATTING:
+                    onegm = BATTING
                 tsp = round(tsg / onegm * 100, 2)
                 text = f" 종목당 배팅금액 {format(BATTING, ',')}원, 필요자금 {format(onegm, ',')}원, "\
                        f" 종목출현빈도수 {onedaycount}개/일, 거래횟수 {tc}회, 평균보유기간 {avghold}일, 익절 {pc}회, "\
