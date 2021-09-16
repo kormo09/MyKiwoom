@@ -15,23 +15,23 @@ class UpdaterChart:
         self.windowQ = qlist[0]
         self.workerQ = qlist[1]
         if self.gubun == ui_num['차트P1']:
-            self.chartQ = qlist[11]
+            self.chartQ = qlist[9]
         elif self.gubun == ui_num['차트P2']:
-            self.chartQ = qlist[12]
+            self.chartQ = qlist[10]
         elif self.gubun == ui_num['차트P3']:
-            self.chartQ = qlist[13]
+            self.chartQ = qlist[11]
         elif self.gubun == ui_num['차트P4']:
-            self.chartQ = qlist[14]
+            self.chartQ = qlist[12]
         elif self.gubun == ui_num['차트P5']:
-            self.chartQ = qlist[15]
+            self.chartQ = qlist[13]
         elif self.gubun == ui_num['차트P6']:
-            self.chartQ = qlist[16]
+            self.chartQ = qlist[14]
         elif self.gubun == ui_num['차트P7']:
-            self.chartQ = qlist[17]
+            self.chartQ = qlist[15]
         elif self.gubun == ui_num['차트P8']:
-            self.chartQ = qlist[18]
+            self.chartQ = qlist[16]
         elif self.gubun == ui_num['차트P9']:
-            self.chartQ = qlist[19]
+            self.chartQ = qlist[17]
         self.df_ct = None
         self.df_ch = None
         self.bool_ctup = False
@@ -216,30 +216,30 @@ class UpdaterChart:
         else:
             if self.gubun == ui_num['차트P5']:
                 pema1, pema2, pema3 = 0., 0., 0.
-                df['day'] = df['체결시간'].apply(lambda x: int(x[:8]))
+                df['short'] = df['체결시간'].apply(lambda x: int(x[:8]))
                 df['time'] = df['체결시간'].apply(lambda x: int(x[8:]))
-                cond = (df['day'] < int(tradeday)) & (df['time'] != '153300')
+                cond = (df['short'] < int(tradeday)) & (df['time'] != '153300')
                 df2 = df[cond]
                 prec = df2['현재가'][df2.index[-1]]
-                cond = (df['day'] == int(tradeday)) & (df['time'] != 153300)
+                cond = (df['short'] == int(tradeday)) & (df['time'] != 153300)
                 if len(df[cond]) > 0:
                     df = df[cond]
                 else:
-                    df = df[df['day'] == df['day'][df.index[-1]]]
+                    df = df[df['short'] == df['short'][df.index[-1]]]
             else:
                 if len(df) > 130:
                     df = df[-130:]
-                df['day'] = df['체결시간'].apply(lambda x: int(x[:8]))
+                df['short'] = df['체결시간'].apply(lambda x: int(x[:8]))
                 df['time'] = df['체결시간'].apply(lambda x: int(x[8:]))
-                lastday = df['day'][df.index[-1]]
-                df2 = df[df['day'] != lastday]
-                preday = df2['day'][df2.index[-1]]
+                lastday = df['short'][df.index[-1]]
+                df2 = df[df['short'] != lastday]
+                preday = df2['short'][df2.index[-1]]
                 pema1 = df2['지수이평05'][df2.index[-1]]
                 pema2 = df2['지수이평10'][df2.index[-1]]
                 pema3 = df2['지수이평20'][df2.index[-1]]
                 lasttime = df['time'][df.index[-1]]
-                cond = (df['day'] == lastday) | \
-                       ((df['day'] == preday) & (df['time'] > lasttime) & (df['time'] != 153300))
+                cond = (df['short'] == lastday) | \
+                       ((df['short'] == preday) & (df['time'] > lasttime) & (df['time'] != 153300))
                 df = df[cond]
 
             df['체결시간'] = df['체결시간'].apply(lambda x: x[8:10] + ':' + x[10:12])

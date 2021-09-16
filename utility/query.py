@@ -1,7 +1,4 @@
-import os
-import sys
 import sqlite3
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utility.static import db_stg
 
 
@@ -9,7 +6,7 @@ class Query:
     def __init__(self, qlist):
         self.windowQ = qlist[0]
         self.workerQ = qlist[1]
-        self.queryQ = qlist[7]
+        self.queryQ = qlist[5]
         self.con = sqlite3.connect(db_stg)
         self.cur = self.con.cursor()
         self.Start()

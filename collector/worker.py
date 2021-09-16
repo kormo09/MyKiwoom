@@ -13,10 +13,9 @@ app = QtWidgets.QApplication(sys.argv)
 
 
 class Worker:
-    def __init__(self, windowQ, workerQ, queryQ, tick1Q, tick2Q, tick3Q, tick4Q, tick5Q, tick6Q, tick7Q, tick8Q):
+    def __init__(self, windowQ, workerQ, tick1Q, tick2Q, tick3Q, tick4Q, tick5Q, tick6Q, tick7Q, tick8Q):
         self.windowQ = windowQ
         self.workerQ = workerQ
-        self.queryQ = queryQ
         self.tick1Q = tick1Q
         self.tick2Q = tick2Q
         self.tick3Q = tick3Q
@@ -124,14 +123,14 @@ class Worker:
             if self.dict_intg['장운영상태'] == 3:
                 if not self.dict_bool['실시간조건검색시작']:
                     self.ConditionSearchStart()
-            if self.dict_intg['장운영상태'] == 8:
-                if not self.dict_bool['실시간조건검색중단']:
-                    self.ConditionSearchStop()
-                if not self.dict_bool['실시간데이터수신중단']:
-                    self.RemoveRealreg()
-                if not self.dict_bool['DB저장']:
-                    self.SaveDatabase()
-                    self.SysExit(False)
+                if int(self.str_jcct[8:]) > 100500:
+                    if not self.dict_bool['실시간조건검색중단']:
+                        self.ConditionSearchStop()
+                    if not self.dict_bool['실시간데이터수신중단']:
+                        self.RemoveRealreg()
+                    if not self.dict_bool['DB저장']:
+                        self.SaveDatabase()
+                        self.SysExit(False)
 
             if now() > self.time_info:
                 if len(self.df_mt) > 0:
@@ -210,17 +209,6 @@ class Worker:
         con = sqlite3.connect(db_tick)
         self.df_mt.to_sql('moneytop', con, if_exists='append', chunksize=1000)
         con.close()
-        self.tick1Q.put('틱데이터저장')
-        self.tick2Q.put('틱데이터저장')
-        self.tick3Q.put('틱데이터저장')
-        self.tick4Q.put('틱데이터저장')
-        self.tick5Q.put('틱데이터저장')
-        self.tick6Q.put('틱데이터저장')
-        self.tick7Q.put('틱데이터저장')
-        self.tick8Q.put('틱데이터저장')
-        self.dict_bool['DB저장'] = True
-        """
-        전략 테스트 프로그램에서 거래한 종목만 저장
         con = sqlite3.connect(db_stg)
         df = pd.read_sql(f"SELECT * FROM tradelist WHERE 체결시간 LIKE '{self.str_tday}%'", con)
         con.close()
@@ -240,7 +228,6 @@ class Worker:
         self.tick7Q.put(['틱데이터저장', codes])
         self.tick8Q.put(['틱데이터저장', codes])
         self.dict_bool['DB저장'] = True
-        """
 
     def OnEventConnect(self, err_code):
         if err_code == 0:
@@ -262,6 +249,9 @@ class Worker:
     def OnReceiveRealCondition(self, code, IorD, cname, cindex):
         if cname == "":
             return
+        if int(self.str_jcct[8:]) > 100500:
+            return
+
         if IorD == "I" and cindex == "0" and code not in self.list_code:
             self.list_code.append(code)
         elif IorD == "D" and cindex == "0" and code in self.list_code:
@@ -270,9 +260,8 @@ class Worker:
     def OnReceiveRealData(self, code, realtype, realdata):
         if realdata == '':
             return
+
         if realtype == '장시작시간':
-            if self.dict_intg['장운영상태'] == 8:
-                return
             try:
                 self.dict_intg['장운영상태'] = int(self.GetCommRealData(code, 215))
                 current = self.GetCommRealData(code, 20)
@@ -282,7 +271,7 @@ class Worker:
             else:
                 self.OperationAlert(current, remain)
         elif realtype == 'VI발동/해제':
-            if self.dict_bool['실시간데이터수신중단']:
+            if int(self.str_jcct[8:]) > 100500:
                 return
             try:
                 code = self.GetCommRealData(code, 9001).strip('A').strip('Q')
@@ -296,7 +285,7 @@ class Worker:
                          (self.dict_vipr[code][0] and now() > self.dict_vipr[code][1])):
                     self.UpdateViPriceDown5(code, name)
         elif realtype == '주식체결':
-            if self.dict_bool['실시간데이터수신중단']:
+            if int(self.str_jcct[8:]) > 100500:
                 return
             self.dict_intg['초당주식체결수신횟수'] += 1
             try:
@@ -330,7 +319,7 @@ class Worker:
                     else:
                         self.UpdateTickData(code, c, o, h, low, per, dm, ch, vp, d)
         elif realtype == '주식호가잔량':
-            if self.dict_bool['실시간데이터수신중단']:
+            if int(self.str_jcct[8:]) > 100500:
                 return
             self.dict_intg['초당호가잔량수신횟수'] += 1
             try:

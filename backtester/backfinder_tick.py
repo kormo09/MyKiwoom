@@ -5,7 +5,7 @@ import pandas as pd
 from multiprocessing import Process, Queue
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utility.setting import db_tick, db_backfind
-from utility.static import now, strf_time, timedelta_sec, strp_time
+from utility.static import now, strf_time
 
 
 class BackFinderTick:
@@ -22,26 +22,11 @@ class BackFinderTick:
             columns = ['등락율', '시가대비등락율', '고저평균대비등락율', '거래대금', '누적거래대금', '전일거래량대비',
                        '체결강도', '체결강도차이', '거래대금차이', '전일거래량대비차이']
             df_bf = pd.DataFrame(columns=columns)
-            avgtime = 300
-            count_cond = 0
             df = pd.read_sql(f"SELECT * FROM '{code}'", conn)
             df = df.set_index('index')
-            lasth = len(df) - 1
+            avgtime = 300
 
             for h, index in enumerate(df.index):
-                if code not in self.df_mt['거래대금상위100'][index]:
-                    count_cond = 0
-                else:
-                    count_cond += 1
-                if count_cond < avgtime:
-                    continue
-                if strp_time('%Y%m%d%H%M%S', index) < \
-                        timedelta_sec(180, strp_time('%Y%m%d%H%M%S', df['VI발동시간'][index])):
-                    continue
-                if df['현재가'][index] >= df['상승VID5가격'][index]:
-                    continue
-                if h >= lasth - avgtime:
-                    break
                 if df['현재가'][h:h + avgtime].max() > df['현재가'][index] * 1.05:
                     per = df['등락율'][index]
                     oper = round((df['현재가'][index] / df['시가'][index] - 1) * 100, 2)

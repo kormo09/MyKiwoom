@@ -1,20 +1,17 @@
-import os
-import sys
 import time
 import sqlite3
 import telegram
 import pandas as pd
-from telegram.ext import Updater, MessageHandler, Filters
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utility.setting import db_stg
+from telegram.ext import Updater, MessageHandler, Filters
 
 
 class TelegramMsg:
     def __init__(self, qlist):
         self.windowQ = qlist[0]
         self.workerQ = qlist[1]
-        self.queryQ = qlist[7]
-        self.teleQ = qlist[8]
+        self.queryQ = qlist[5]
+        self.teleQ = qlist[6]
         self.updater = None
 
         con = sqlite3.connect(db_stg)

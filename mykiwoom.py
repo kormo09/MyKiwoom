@@ -5,7 +5,6 @@ import subprocess
 from utility.static import now, strf_time
 from utility.setting import system_path
 
-
 os.system(f'python {system_path}/login/versionupdater.py')
 time.sleep(5)
 
@@ -29,17 +28,8 @@ if now().weekday() == 5:
     os.system(f'python {system_path}/collector/download_daydata.py')
     time.sleep(5)
 
-"""
-단중장기 전략 완성 후 활성화
 os.system(f'python {system_path}/updater/updater_short.py')
 time.sleep(5)
-
-os.system(f'python {system_path}/updater/updater_mid.py')
-time.sleep(5)
-
-os.system(f'python {system_path}/updater/updater_long.py')
-time.sleep(5)
-"""
 
 os.system(f'python {system_path}/backtester/backtester_tick.py')
 time.sleep(5)

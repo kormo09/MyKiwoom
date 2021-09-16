@@ -11,7 +11,7 @@ from multiprocessing import Process, Queue, Lock
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from login.manuallogin import find_window, manual_login
 from utility.static import strf_time, now, telegram_msg
-from utility.setting import openapi_path, sn_brrq, db_day, db_stg
+from utility.setting import openapi_path, sn_brrq, db_day, db_stg, sn_cond
 app = QtWidgets.QApplication(sys.argv)
 
 
@@ -23,15 +23,21 @@ class UpdaterShort:
         self.str_trname = None
         self.str_tday = strf_time('%Y%m%d')
         self.df_tr = None
+        self.list_trcd = []
         self.dict_tritems = None
+        self.dict_cond = {}
         self.dict_bool = {
             '로그인': False,
-            'TR수신': False
+            'TR수신': False,
+            'CD수신': False,
+            'CR수신': False
         }
 
         self.ocx = QAxWidget('KHOPENAPI.KHOpenAPICtrl.1')
         self.ocx.OnEventConnect.connect(self.OnEventConnect)
         self.ocx.OnReceiveTrData.connect(self.OnReceiveTrData)
+        self.ocx.OnReceiveTrCondition.connect(self.OnReceiveTrCondition)
+        self.ocx.OnReceiveConditionVer.connect(self.OnReceiveConditionVer)
         self.Start()
 
     def Start(self):
@@ -43,12 +49,28 @@ class UpdaterShort:
         while not self.dict_bool['로그인']:
             pythoncom.PumpWaitingMessages()
 
+        self.dict_bool['CD수신'] = False
+        self.ocx.dynamicCall('GetConditionLoad()')
+        while not self.dict_bool['CD수신']:
+            pythoncom.PumpWaitingMessages()
+
+        data = self.ocx.dynamicCall('GetConditionNameList()')
+        conditions = data.split(';')[:-1]
+        for condition in conditions:
+            cond_index, cond_name = condition.split('^')
+            self.dict_cond[int(cond_index)] = cond_name
+
     def Updater(self):
-        con = sqlite3.connect(db_stg)
-        df = pd.read_sql('SELECT * FROM short', con)
-        con.close()
+        codes = self.SendCondition(sn_cond, self.dict_cond[2], 2, 0)
+        conn = sqlite3.connect(db_stg)
+        df = pd.read_sql(f'SELECT * FROM jangolist', conn)
+        conn.close()
         df = df.set_index('index')
-        codes = list(df.index)
+        df = df[df['전략구분'] == '단기']
+        jango_list = list(df.index)
+        for code in jango_list:
+            if code not in codes:
+                codes.append(code)
         codes = [code for i, code in enumerate(codes) if i % 4 == self.gubun]
         count = len(codes)
         for i, code in enumerate(codes):
@@ -57,11 +79,24 @@ class UpdaterShort:
             df = self.Block_Request('opt10081', 종목코드=code, 기준일자=self.str_tday, 수정주가구분=1,
                                     output='주식일봉차트조회', next=0)
             self.lock.release()
+            if len(df) < 2:
+                continue
             df = df.set_index('일자')
             df = df[::-1]
-            df[['현재가', '시가']] = df[['현재가', '시가']].astype(int).abs()
-            preshort = 1 if df['현재가'][-1] > df['시가'][-1] and df['현재가'][-1] >= df['현재가'][-2] * 1.07 else 0
-            self.queryQ.put([code, preshort])
+            columns = ['현재가', '시가', '고가', '저가', '거래대금']
+            df[columns] = df[columns].astype(int).abs()
+            df['고가저가폭'] = df['고가'] - df['저가']
+            df['종가시가폭'] = df['현재가'] - df['시가']
+            df[['종가시가폭']] = df[['종가시가폭']].abs()
+            df['돌파계수'] = df['종가시가폭'] / df['고가저가폭']
+            df[['돌파계수']] = df[['돌파계수']].astype(float).round(2)
+            df['평균돌파계수'] = df['돌파계수'].rolling(window=7).mean().round(2)
+            try:
+                if df['거래대금'][-1] >= 300000 or code in jango_list:
+                    k = int(df['고가저가폭'][-1] * df['평균돌파계수'][-1])
+                    self.queryQ.put([code, k])
+            except ValueError:
+                pass
             print(f'[{now()}] {self.gubun} 데이터 업데이트 중 ... [{i + 1}/{count}]')
         if self.gubun == 3:
             self.queryQ.put('업데이트완료')
@@ -70,6 +105,19 @@ class UpdaterShort:
     def OnEventConnect(self, err_code):
         if err_code == 0:
             self.dict_bool['로그인'] = True
+
+    def OnReceiveConditionVer(self, ret, msg):
+        if msg == '':
+            return
+        if ret == 1:
+            self.dict_bool['CD수신'] = True
+
+    def OnReceiveTrCondition(self, screen, code_list, cond_name, cond_index, nnext):
+        if screen == "" and cond_name == "" and cond_index == "" and nnext == "":
+            return
+        codes = code_list.split(';')[:-1]
+        self.list_trcd = codes
+        self.dict_bool['CR수신'] = True
 
     def OnReceiveTrData(self, screen, rqname, trcode, record, nnext):
         if screen == '' and record == '':
@@ -94,6 +142,13 @@ class UpdaterShort:
         df = pd.DataFrame(data=df2, columns=items)
         self.df_tr = df
         self.dict_bool['TR수신'] = True
+
+    def SendCondition(self, screen, cond_name, cond_index, search):
+        self.dict_bool['CR수신'] = False
+        self.ocx.dynamicCall('SendCondition(QString, QString, int, int)', screen, cond_name, cond_index, search)
+        while not self.dict_bool['CR수신']:
+            pythoncom.PumpWaitingMessages()
+        return self.list_trcd
 
     def Block_Request(self, *args, **kwargs):
         trcode = args[0].lower()
@@ -150,19 +205,18 @@ class Query:
         self.con.close()
 
     def Start(self):
-        df_short = pd.DataFrame(columns=['preshort'])
+        columns = ['변동성']
+        df_mid = pd.DataFrame(columns=columns)
         while True:
             data = self.queryQ.get()
             if data != '업데이트완료':
-                df_short.at[data[0]] = data[1]
+                df_mid.at[data[0]] = data[1]
             else:
                 break
 
+        df_mid[columns] = df_mid[columns].astype(int)
         con = sqlite3.connect(db_stg)
-        df = pd.read_sql('SELECT * FROM short', con)
-        df = df.set_index('index')
-        df['preshort'] = df_short['preshort']
-        df.to_sql('short', con, if_exists='replace', chunksize=1000)
+        df_mid.to_sql('short', con, if_exists='replace', chunksize=1000)
         con.close()
         telegram_msg('short DB를 업데이트하였습니다.')
         sys.exit()

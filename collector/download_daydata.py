@@ -88,6 +88,8 @@ class DaydataDowwnload:
                 self.lock.release()
                 df2 = df2.set_index('일자')
                 df.append(df2)
+                if int(df2.index[-1]) < 20150600:
+                    break
             df = pd.concat(df)
             columns = ['현재가', '시가', '고가', '저가', '거래대금']
             df[columns] = df[columns].astype(int).abs()
