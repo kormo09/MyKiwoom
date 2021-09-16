@@ -8,10 +8,10 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utility.static import now, strf_time
 from utility.setting import db_day, db_backtest, db_stg, graph_path
 
-startday = 20150600    # 백테스팅 시작날짜
-batting = 1000000      # 단위 원
-premoney = 10000       # 단위 백만
-avg_period = 20        # 돌파계수 평균기간
+STARTDAY = 20150600     # 백테스팅 시작날짜
+BATTING = 1000000       # 단위 원
+PREMONEY = 10000        # 단위 백만
+AVGPERIOD = 20          # 돌파계수 평균기간
 
 
 class BackTesterShort:
@@ -50,7 +50,7 @@ class BackTesterShort:
             self.df[['종가시가폭']] = self.df[['종가시가폭']].abs()
             self.df['돌파계수'] = self.df['종가시가폭'] / self.df['고가저가폭']
             self.df[['돌파계수']] = self.df[['돌파계수']].astype(float).round(2)
-            self.df['평균돌파계수'] = self.df['돌파계수'].rolling(window=avg_period).mean()
+            self.df['평균돌파계수'] = self.df['돌파계수'].rolling(window=AVGPERIOD).mean()
             self.df[['평균돌파계수']] = self.df[['평균돌파계수']].round(2)
             self.totalcount = 0
             self.totalcount_p = 0
@@ -60,7 +60,7 @@ class BackTesterShort:
             self.totalper = 0.
             lasth = len(self.df) - 1
             for h, index in enumerate(self.df.index):
-                if int(index) < startday or h < avg_period:
+                if int(index) < STARTDAY or h < AVGPERIOD:
                     continue
                 self.index = index
                 self.indexn = h
@@ -82,7 +82,7 @@ class BackTesterShort:
     def Buy(self):
         k = self.df['고가저가폭'][self.indexn - 1] * self.df['평균돌파계수'][self.indexn - 1]
         self.buyprice = self.df['시가'][self.index] + k
-        self.buycount = int(batting / self.buyprice)
+        self.buycount = int(BATTING / self.buyprice)
         if self.buycount == 0:
             return
         self.indexb = self.indexn
@@ -223,9 +223,9 @@ class Total:
                 avgsp = round(df_back['수익률'].sum() / tc, 2)
                 tsg = int(df_back['수익금'].sum())
                 onedaycount = round(tc / self.totalday, 2)
-                onegm = int(batting * onedaycount * avghold)
+                onegm = int(BATTING * onedaycount * avghold)
                 tsp = round(tsg / onegm * 100, 2)
-                text = f" 종목당 배팅금액 {format(batting, ',')}원, 필요자금 {format(onegm, ',')}원, "\
+                text = f" 종목당 배팅금액 {format(BATTING, ',')}원, 필요자금 {format(onegm, ',')}원, "\
                        f" 종목출현빈도수 {onedaycount}개/일, 거래횟수 {tc}회, 평균보유기간 {avghold}일, 익절 {pc}회, "\
                        f" 손절 {mc}회, 승률 {pper}%, 평균수익률 {avgsp}%, 수익률합계 {tsp}%, 수익금합계 {format(tsg, ',')}원"
                 print(text)
@@ -264,7 +264,7 @@ if __name__ == "__main__":
         df = pd.read_sql(f"SELECT * FROM '{codee}'", con)
         df = df.set_index('일자')
         for indexx in df.index:
-            if int(indexx) >= startday and indexx not in day_list:
+            if int(indexx) >= STARTDAY and indexx not in day_list:
                 day_list.append(indexx)
         print(f' 백테스팅 총 거래일수 계산 중 ... {i + 1}/{last}')
     totalday = len(day_list)

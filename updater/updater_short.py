@@ -14,6 +14,9 @@ from utility.static import strf_time, now, telegram_msg
 from utility.setting import openapi_path, sn_brrq, db_day, db_stg, sn_cond
 app = QtWidgets.QApplication(sys.argv)
 
+PREMONEY = 10000        # 단위 백만
+AVGPERIOD = 20          # 돌파계수 평균기간
+
 
 class UpdaterShort:
     def __init__(self, gubun, queryQQ, lockk):
@@ -90,9 +93,9 @@ class UpdaterShort:
             df[['종가시가폭']] = df[['종가시가폭']].abs()
             df['돌파계수'] = df['종가시가폭'] / df['고가저가폭']
             df[['돌파계수']] = df[['돌파계수']].astype(float).round(2)
-            df['평균돌파계수'] = df['돌파계수'].rolling(window=7).mean().round(2)
+            df['평균돌파계수'] = df['돌파계수'].rolling(window=AVGPERIOD).mean().round(2)
             try:
-                if df['거래대금'][-1] >= 300000 or code in jango_list:
+                if df['거래대금'][-1] >= PREMONEY or code in jango_list:
                     k = int(df['고가저가폭'][-1] * df['평균돌파계수'][-1])
                     self.queryQ.put([code, k])
             except ValueError:

@@ -8,9 +8,9 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utility.setting import db_backtest, db_tick, db_stg, graph_path
 from utility.static import now, strf_time, telegram_msg, timedelta_sec, strp_time, timedelta_day
 
-batting = 5000000       # 종목당 배팅금액
-test_period = 14        # 백테스팅 기간(14일 경우 과거 2주간의 데이터를 백테스팅한다)
-totaltime = 36000       # 백테스팅 기간 동안 9시부터 10시까지의 시간 총합, 단위 초
+BATTING = 5000000       # 종목당 배팅금액
+TESTPERIOD = 14         # 백테스팅 기간(14일 경우 과거 2주간의 데이터를 백테스팅한다)
+TOTALTIME = 36000       # 백테스팅 기간 동안 9시부터 10시까지의 시간 총합, 단위 초
 
 
 class BackTesterTick:
@@ -63,7 +63,7 @@ class BackTesterTick:
     def Start(self):
         conn = sqlite3.connect(db_tick)
         tcount = len(self.code_list)
-        int_daylimit = int(strf_time('%Y%m%d', timedelta_day(-test_period)))
+        int_daylimit = int(strf_time('%Y%m%d', timedelta_day(-TESTPERIOD)))
         for k, code in enumerate(self.code_list):
             self.code = code
             self.df = pd.read_sql(f"SELECT * FROM '{code}'", conn)
@@ -113,15 +113,15 @@ class BackTesterTick:
         return True
 
     def Buy(self):
-        if self.df['매도1호가'][self.index] * self.df['매도1잔량'][self.index] >= batting:
+        if self.df['매도1호가'][self.index] * self.df['매도1잔량'][self.index] >= BATTING:
             s1hg = self.df['매도1호가'][self.index]
-            self.buycount = int(batting / s1hg)
+            self.buycount = int(BATTING / s1hg)
             self.buyprice = s1hg
         else:
             s1hg = self.df['매도1호가'][self.index]
             s1jr = self.df['매도1잔량'][self.index]
             s2hg = self.df['매도2호가'][self.index]
-            ng = batting - s1hg * s1jr
+            ng = BATTING - s1hg * s1jr
             s2jc = int(ng / s2hg)
             self.buycount = s1jr + s2jc
             self.buyprice = round((s1hg * s1jr + s2hg * s2jc) / self.buycount, 2)
@@ -295,12 +295,12 @@ class Total:
                 avghold = round(df_back_['평균보유기간'].sum() / len(df_back_), 2)
                 avgsp = round(df_back['수익률'].sum() / tc, 2)
                 tsg = int(df_back['수익금'].sum())
-                onedaycount = round(tc / totaltime, 2)
-                onegm = int(batting * onedaycount * avghold)
+                onedaycount = round(tc / TOTALTIME, 2)
+                onegm = int(BATTING * onedaycount * avghold)
                 tsp = round(tsg / onegm * 100, 4)
                 text = [self.gap_ch, self.avg_time, self.gap_sm, self.ch_low, self.dm_low, self.per_high, self.cs_per]
                 print(f' {text}')
-                text = f" 종목당 배팅금액 {format(batting, ',')}원, 필요자금 {format(onegm, ',')}원, "\
+                text = f" 종목당 배팅금액 {format(BATTING, ',')}원, 필요자금 {format(onegm, ',')}원, "\
                        f" 종목출현빈도수 {onedaycount}개/초, 거래횟수 {tc}회, 평균보유기간 {avghold}초,\n 익절 {pc}회, "\
                        f" 손절 {mc}회, 승률 {pper}%, 평균수익률 {avgsp}%, 수익률합계 {tsp}%, 수익금합계 {format(tsg, ',')}원"
                 print(text)

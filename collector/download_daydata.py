@@ -14,6 +14,8 @@ from utility.static import strf_time, now, telegram_msg
 from utility.setting import openapi_path, sn_brrq, db_day, sn_cond
 app = QtWidgets.QApplication(sys.argv)
 
+STARTDAY = 20150600     # 일봉데이터 다운로드 시작 날짜
+
 
 class DaydataDowwnload:
     def __init__(self, gubun, queryQQ, lockk):
@@ -88,7 +90,7 @@ class DaydataDowwnload:
                 self.lock.release()
                 df2 = df2.set_index('일자')
                 df.append(df2)
-                if int(df2.index[-1]) < 20150600:
+                if int(df2.index[-1]) < STARTDAY:
                     break
             df = pd.concat(df)
             columns = ['현재가', '시가', '고가', '저가', '거래대금']
