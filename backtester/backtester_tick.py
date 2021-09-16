@@ -379,15 +379,10 @@ if __name__ == "__main__":
             if sp >= htsp:
                 htsp = sp
                 high_var = num
+                print(f' 최고수익률 갱신 {htsp}%')
 
-    if high_var[0] == 3:
-        gap_ch = [high_var[0] + 0.1, high_var[0] + 0.9, 0.1, 0.1]
-    else:
-        gap_ch = [high_var[0] - 0.9, high_var[0] + 0.9, 0.1, 0.1]
-    if high_var[1] == 30:
-        avg_time = [high_var[1] + 3, high_var[1] + 27, 3, 3]
-    else:
-        avg_time = [high_var[1] - 27, high_var[1] + 27, 3, 3]
+    gap_ch = [high_var[0] - 0.9, high_var[0] + 0.9, 0.1, 0.1]
+    avg_time = [high_var[1], high_var[1], 30, 3]
     gap_sm = [50, 100, 10, 10]
     ch_low = [50, 100, 10, 10]
     dm_low = [0, 10000, 1000, 1000]
@@ -416,23 +411,26 @@ if __name__ == "__main__":
         if sp >= htsp:
             htsp = sp
             high_var = num[i][0]
+            print(f' 최고수익률 갱신 {htsp}%')
         if num[i][0] == num[i][1]:
+            num[i][0] = high_var
             if num[i][2] != num[i][3]:
-                num[i][0] = high_var
                 if num[i][0] != ogin_var:
                     num[i][0] -= num[i][2]
                     num[i][1] = round(num[i][0] + num[i][2] * 2 - num[i][3], 1)
                 else:
                     num[i][1] = round(num[i][0] + num[i][2] - num[i][3], 1)
                 num[i][2] = num[i][3]
+            elif i < len(num) - 1:
+                i += 1
+                if i == 1:
+                    num[i][0] -= num[i][2]
+                    num[i][1] = round(num[i][0] + num[i][2] * 2 - num[i][3], 1)
+                    num[i][2] = num[i][3]
+                ogin_var = num[i][0]
+                high_var = num[i][0]
             else:
-                num[i][0] = high_var
-                if i < len(num) - 1:
-                    i += 1
-                    high_var = num[i][0]
-                    ogin_var = num[i][0]
-                else:
-                    break
+                break
         num[i][0] = round(num[i][0] + num[i][2], 1)
 
     w = Process(target=Total, args=(q, last, num, df1))
