@@ -393,7 +393,7 @@ if __name__ == "__main__":
     cs_per = [3, 10, 1, 0.2]
     num = [gap_ch, avg_time, gap_sm, ch_low, dm_low, per_high, cs_per]
 
-    ogin_var = high_var[1]
+    ogin_var = high_var[0]
     high_var = high_var[0]
 
     i = 0
