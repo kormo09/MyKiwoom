@@ -374,7 +374,7 @@ if __name__ == "__main__":
                 p.join()
             w.join()
             sp = q.get()
-            if sp > htsp:
+            if sp >= htsp:
                 htsp = sp
                 high_var = num
 
@@ -411,7 +411,7 @@ if __name__ == "__main__":
             p.join()
         w.join()
         sp = q.get()
-        if sp > htsp:
+        if sp >= htsp:
             htsp = sp
             high_var = num[i][0]
         if num[i][0] == num[i][1]:
