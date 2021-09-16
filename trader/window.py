@@ -142,17 +142,16 @@ class Window(QtWidgets.QMainWindow):
                     tableWidget.setColumnWidth(3, int(111 * resize))
                     tableWidget.setColumnWidth(4, int(111 * resize))
                     tableWidget.setColumnWidth(5, int(111 * resize))
-            elif colcount == 10:
-                tableWidget.setColumnWidth(0, int(81 * resize))
-                tableWidget.setColumnWidth(1, int(65 * resize))
-                tableWidget.setColumnWidth(2, int(65 * resize))
-                tableWidget.setColumnWidth(3, int(65 * resize))
-                tableWidget.setColumnWidth(4, int(65 * resize))
-                tableWidget.setColumnWidth(5, int(65 * resize))
-                tableWidget.setColumnWidth(6, int(65 * resize))
-                tableWidget.setColumnWidth(7, int(65 * resize))
-                tableWidget.setColumnWidth(8, int(65 * resize))
-                tableWidget.setColumnWidth(9, int(65 * resize))
+            elif columns[-1] == 'chhigh':
+                tableWidget.setColumnWidth(0, int(122 * resize))
+                tableWidget.setColumnWidth(1, int(68 * resize))
+                tableWidget.setColumnWidth(2, int(68 * resize))
+                tableWidget.setColumnWidth(3, int(68 * resize))
+                tableWidget.setColumnWidth(4, int(68 * resize))
+                tableWidget.setColumnWidth(5, int(68 * resize))
+                tableWidget.setColumnWidth(6, int(68 * resize))
+                tableWidget.setColumnWidth(7, int(68 * resize))
+                tableWidget.setColumnWidth(8, int(68 * resize))
             else:
                 if columns[0] in ['기간', '일자']:
                     tableWidget.setColumnWidth(0, int(100 * resize))
@@ -394,10 +393,8 @@ class Window(QtWidgets.QMainWindow):
         self.tj_tableWidget = setTablewidget(self.td_tab, columns_tj, len(columns_tj), 1)
         self.jg_tableWidget = setTablewidget(self.td_tab, columns_jg, len(columns_jg), 13, clicked=self.CellClicked_6)
         self.cj_tableWidget = setTablewidget(self.td_tab, columns_cj, len(columns_cj), 12, clicked=self.CellClicked_7)
-        self.gjt_tableWidget = setTablewidget(self.gjt_tab, columns_gjt, len(columns_gjt), 46, clicked=self.CellClicked_8)
+        self.gjt_tableWidget = setTablewidget(self.gjt_tab, columns_gjt3, len(columns_gjt3), 46, clicked=self.CellClicked_8)
         self.gjs_tableWidget = setTablewidget(self.gjs_tab, columns_gjs, len(columns_gjs), 46, clicked=self.CellClicked_9)
-        self.gjm_tableWidget = setTablewidget(self.gjm_tab, columns_gjm, len(columns_gjm), 46, clicked=self.CellClicked_10)
-        self.gjl_tableWidget = setTablewidget(self.gjl_tab, columns_gjl, len(columns_gjl), 46, clicked=self.CellClicked_11)
 
         self.st_groupBox = QtWidgets.QGroupBox(self.st_tab)
         self.calendarWidget = QtWidgets.QCalendarWidget(self.st_groupBox)
@@ -405,7 +402,7 @@ class Window(QtWidgets.QMainWindow):
         self.calendarWidget.setCurrentPage(todayDate.year(), todayDate.month())
         self.calendarWidget.clicked.connect(self.CalendarClicked)
         self.stn_tableWidget = setTablewidget(self.st_tab, columns_sn, len(columns_sn), 1)
-        self.stl_tableWidget = setTablewidget(self.st_tab, columns_st, len(columns_st), 31, clicked=self.CellClicked_12)
+        self.stl_tableWidget = setTablewidget(self.st_tab, columns_st, len(columns_st), 31, clicked=self.CellClicked_10)
 
         self.sg_groupBox = QtWidgets.QGroupBox(self.sg_tab)
         self.sg_pushButton_01 = setPushbutton('일별집계', self.sg_groupBox, self.ButtonClicked_3)
@@ -417,8 +414,6 @@ class Window(QtWidgets.QMainWindow):
         self.table_tabWidget.addTab(self.td_tab, '계좌평가')
         self.table_tabWidget.addTab(self.gjt_tab, '단타')
         self.table_tabWidget.addTab(self.gjs_tab, '단기')
-        self.table_tabWidget.addTab(self.gjm_tab, '중기')
-        self.table_tabWidget.addTab(self.gjl_tab, '장기')
         self.table_tabWidget.addTab(self.st_tab, '거래목록')
         self.table_tabWidget.addTab(self.sg_tab, '수익현황')
 
@@ -567,8 +562,6 @@ class Window(QtWidgets.QMainWindow):
         self.cj_tableWidget.setGeometry(int(5 * resize), int(749 * resize), int(668 * resize), int(320 * resize))
         self.gjt_tableWidget.setGeometry(int(5 * resize), int(5 * resize), int(668 * resize), int(1063 * resize))
         self.gjs_tableWidget.setGeometry(int(5 * resize), int(5 * resize), int(668 * resize), int(1063 * resize))
-        self.gjm_tableWidget.setGeometry(int(5 * resize), int(5 * resize), int(668 * resize), int(1063 * resize))
-        self.gjl_tableWidget.setGeometry(int(5 * resize), int(5 * resize), int(668 * resize), int(1063 * resize))
 
         self.st_groupBox.setGeometry(int(5 * resize), int(3 * resize), int(668 * resize), int(278 * resize))
         self.calendarWidget.setGeometry(int(5 * resize), int(11 * resize), int(658 * resize), int(258 * resize))
@@ -587,10 +580,8 @@ class Window(QtWidgets.QMainWindow):
             '거래대금차이': 0,
             '평균시간': 0,
             '체결강도하한': 0.,
-            '전일거래량대비하한': 0.,
             '누적거래대금하한': 0,
-            '등락율상한': 0.,
-            '고저평균대비등락율하한': 0.
+            '등락율상한': 0.
         }
 
         self.dict_code = {}
@@ -616,7 +607,7 @@ class Window(QtWidgets.QMainWindow):
         self.dict_intm = {'스레드': 0, '시피유': 0., '메모리': 0.}
         self.dict_ints = {'스레드': 0, '시피유': 0., '메모리': 0.}
 
-        self.writer = Writer(windowQ)
+        self.writer = Writer()
         self.writer.data0.connect(self.UpdateTexedit)
         self.writer.data1.connect(self.UpdateChart)
         self.writer.data2.connect(self.UpdateTick)
@@ -681,7 +672,7 @@ class Window(QtWidgets.QMainWindow):
                 pushbutton = self.sj_pushButton_06
             elif msg[1] == '업종지수 주식체결 등록':
                 pushbutton = self.sj_pushButton_07
-            elif msg[1] == '단중장기 주식체결 등록':
+            elif msg[1] == '단기 주식체결 등록':
                 pushbutton = self.sj_pushButton_08
             elif msg[1] == 'VI발동해제 등록':
                 self.ButtonClicked_4(2)
@@ -690,15 +681,15 @@ class Window(QtWidgets.QMainWindow):
                 pushbutton = self.sj_pushButton_10
             elif msg[1] == '실시간 조건검색식 등록':
                 pushbutton = self.sj_pushButton_11
-            elif msg[1] == '단타 목표수익률 달성':
+            elif msg[1] == '장초 단타 전략 중단':
                 pushbutton = self.sj_pushButton_12
-            elif msg[1] == '단타 전략 중단':
+            elif msg[1] == '실시간 조건검색식 중단':
                 pushbutton = self.sj_pushButton_13
-            elif msg[1] == '잔고청산':
+            elif msg[1] == '단타 실시간 데이터 수신 중단':
                 pushbutton = self.sj_pushButton_14
-            elif msg[1] == '실시간 데이터 수신 중단':
+            elif msg[1] == '장초 단타 전략 잔고 청산':
                 pushbutton = self.sj_pushButton_15
-            elif msg[1] == '단중장기 매수주문':
+            elif msg[1] == '모든 실시간 데이터 수신 중단':
                 pushbutton = self.sj_pushButton_16
             elif msg[1] == '일별거래목록 저장':
                 pushbutton = self.sj_pushButton_17
@@ -767,7 +758,7 @@ class Window(QtWidgets.QMainWindow):
             chartq_size = chart1Q.qsize() + chart2Q.qsize() + chart3Q.qsize() + chart4Q.qsize() + chart5Q.qsize()
             chartq_size += chart6Q.qsize() + chart7Q.qsize() + chart8Q.qsize() + chart9Q.qsize()
             hogaq_size = hoga1Q.qsize() + hoga2Q.qsize()
-            stgq_size = stgtQ.qsize() + stglQ.qsize() + stgmQ.qsize() + stgsQ.qsize()
+            stgq_size = stgtQ.qsize() + stgsQ.qsize()
             label04text = f'Queue - windowQ {windowQ.qsize()} | workerQ {workerQ.qsize()} | stgQ {stgq_size} | '\
                           f'chartQ {chartq_size} | hogaQ {hogaq_size} | queryQ {queryQ.qsize()} | '\
                           f'soundQ {soundQ.qsize()} | teleQ {teleQ.qsize()}'
@@ -1002,10 +993,8 @@ class Window(QtWidgets.QMainWindow):
             self.dict_intg['거래대금차이'] = df['거래대금차이'][0]
             self.dict_intg['평균시간'] = df['평균시간'][0]
             self.dict_intg['체결강도하한'] = df['체결강도하한'][0]
-            self.dict_intg['전일거래량대비하한'] = df['전일거래량대비하한'][0]
             self.dict_intg['누적거래대금하한'] = df['누적거래대금하한'][0]
             self.dict_intg['등락율상한'] = df['등락율상한'][0]
-            self.dict_intg['고저평균대비등락율하한'] = df['고저평균대비등락율하한'][0]
             return
 
         if gubun == ui_num['tick'] and self.table_tabWidget.currentWidget() != self.gjt_tab:
@@ -1043,7 +1032,7 @@ class Window(QtWidgets.QMainWindow):
             item = QtWidgets.QTableWidgetItem(changeFormat(chhigh))
             item.setTextAlignment(Qt.AlignVCenter | Qt.AlignRight)
             self.gjt_tableWidget.setItem(j, 9, item)
-            for i, column in enumerate(columns_gs2):
+            for i, column in enumerate(columns_gjt2):
                 if column in ['거래대금', '누적거래대금']:
                     item = QtWidgets.QTableWidgetItem(changeFormat(dict_df[code][column][0]).split('.')[0])
                 else:
@@ -1060,26 +1049,10 @@ class Window(QtWidgets.QMainWindow):
         gubun = data[0]
         df = data[1]
 
-        gj_tableWidget = None
-        columns = None
-        if gubun in [ui_num['short'], ui_num['short'] + 100]:
-            if gubun == ui_num['short'] and self.table_tabWidget.currentWidget() != self.gjs_tab:
-                return
-            columns = columns_gjs
-            gj_tableWidget = self.gjs_tableWidget
-        elif gubun in [ui_num['mid'], ui_num['mid'] + 100]:
-            if gubun == ui_num['mid'] and self.table_tabWidget.currentWidget() != self.gjm_tab:
-                return
-            columns = columns_gjm
-            gj_tableWidget = self.gjm_tableWidget
-        elif gubun in [ui_num['long'], ui_num['long'] + 100]:
-            if gubun == ui_num['long'] and self.table_tabWidget.currentWidget() != self.gjl_tab:
-                return
-            columns = columns_gjl
-            gj_tableWidget = self.gjl_tableWidget
-
-        if gj_tableWidget is None or columns is None:
+        if gubun == ui_num['short'] and self.table_tabWidget.currentWidget() != self.gjs_tab:
             return
+
+        gj_tableWidget = self.gjs_tableWidget
 
         if len(df) == 0:
             gj_tableWidget.clearContents()
@@ -1106,7 +1079,7 @@ class Window(QtWidgets.QMainWindow):
 
         gj_tableWidget.setRowCount(len(df))
         for j, code in enumerate(df.index):
-            for i, column in enumerate(columns):
+            for i, column in enumerate(columns_gjs):
                 if column == '종목명':
                     item = QtWidgets.QTableWidgetItem(self.dict_name[code])
                     item.setTextAlignment(Qt.AlignVCenter | Qt.AlignLeft)
@@ -1116,9 +1089,11 @@ class Window(QtWidgets.QMainWindow):
                     else:
                         item = QtWidgets.QTableWidgetItem(changeFormat(df[column][code]))
                     item.setTextAlignment(Qt.AlignVCenter | Qt.AlignRight)
-
-                # 전략별 글자 색상 변공 비공개
-
+                if gubun in [ui_num['short'], ui_num['short'] + 100]:
+                    if df['현재가'][code] >= df['시가'][code] + df['변동성'][code]:
+                        item.setForeground(color_fg_bt)
+                    else:
+                        item.setForeground(color_fg_dk)
                 gj_tableWidget.setItem(j, i, item)
         if len(df) < 46:
             gj_tableWidget.setRowCount(46)
@@ -1646,26 +1621,6 @@ class Window(QtWidgets.QMainWindow):
     def CellClicked_10(self, row, col):
         if col > 1:
             return
-        item = self.gjm_tableWidget.item(row, 0)
-        if item is None:
-            return
-        code = self.dict_code[item.text()]
-        self.PutWorkerQ(code, col)
-
-    @QtCore.pyqtSlot(int, int)
-    def CellClicked_11(self, row, col):
-        if col > 1:
-            return
-        item = self.gjl_tableWidget.item(row, 0)
-        if item is None:
-            return
-        code = self.dict_code[item.text()]
-        self.PutWorkerQ(code, col)
-
-    @QtCore.pyqtSlot(int, int)
-    def CellClicked_12(self, row, col):
-        if col > 1:
-            return
         item = self.stl_tableWidget.item(row, 1)
         if item is None:
             return
@@ -2060,18 +2015,16 @@ class Writer(QtCore.QThread):
     data3 = QtCore.pyqtSignal(list)
     data4 = QtCore.pyqtSignal(list)
 
-    def __init__(self, windowQQ):
+    def __init__(self):
         super().__init__()
-        self.windowQ = windowQQ
 
     def run(self):
         tlist = [ui_num['단타설정'], ui_num['tick'], ui_num['tick'] + 100]
         clist = [ui_num['차트P1'], ui_num['차트P2'], ui_num['차트P3'], ui_num['차트P4'], ui_num['차트P5'],
                  ui_num['차트P6'], ui_num['차트P7'], ui_num['차트P8'], ui_num['차트P9']]
-        dlist = [ui_num['long'], ui_num['mid'], ui_num['short'],
-                 ui_num['long'] + 100, ui_num['mid'] + 100, ui_num['short'] + 100]
+        dlist = [ui_num['short'], ui_num['short'] + 100]
         while True:
-            data = self.windowQ.get()
+            data = windowQ.get()
             if data[0] not in tlist and type(data[1]) != pd.DataFrame:
                 self.data0.emit(data)
             elif data[0] in clist:
@@ -2085,27 +2038,21 @@ class Writer(QtCore.QThread):
 
 
 if __name__ == '__main__':
-    windowQ, workerQ, stgtQ, stglQ, stgmQ, stgsQ, soundQ, queryQ, teleQ, hoga1Q, hoga2Q, chart1Q, chart2Q, chart3Q,\
+    windowQ, workerQ, stgtQ, stgsQ, soundQ, queryQ, teleQ, hoga1Q, hoga2Q, chart1Q, chart2Q, chart3Q,\
         chart4Q, chart5Q, chart6Q, chart7Q, chart8Q, chart9Q = Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), \
-        Queue(), Queue(), Queue(),  Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), \
-        Queue(), Queue()
+        Queue(), Queue(), Queue(),  Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue()
 
-    qlist = [windowQ, workerQ, stgtQ, stglQ, stgmQ, stgsQ, soundQ, queryQ, teleQ, hoga1Q, hoga2Q,
+    qlist = [windowQ, workerQ, stgtQ, stgsQ, soundQ, queryQ, teleQ, hoga1Q, hoga2Q,
              chart1Q, chart2Q, chart3Q, chart4Q, chart5Q, chart6Q, chart7Q, chart8Q, chart9Q]
 
-    from query import Query
-    from sound import Sound
+    from utility.query import Query
+    from utility.sound import Sound
+    from utility.telegrammsg import TelegramMsg
     from worker import Worker
-    from telegrammsg import TelegramMsg
     from updater_hoga import UpdaterHoga
     from updater_chart import UpdaterChart
     from strategy_tick import StrategyTick
-    """
-    단기, 중기, 장기 전략 완성 후 활성화
-    from strategy_long import StrategyLong
-    from strategy_mid import StrategyMid
     from strategy_short import StrategyShort
-    """
 
     Process(target=Sound, args=(qlist,), daemon=True).start()
     Process(target=Query, args=(qlist,), daemon=True).start()
@@ -2122,12 +2069,7 @@ if __name__ == '__main__':
     Process(target=UpdaterChart, args=(qlist, ui_num['차트P8']), daemon=True).start()
     Process(target=UpdaterChart, args=(qlist, ui_num['차트P9']), daemon=True).start()
     Process(target=StrategyTick, args=(qlist,), daemon=True).start()
-    """
-    단기, 중기, 장기 전략 완성 후 활성화
     Process(target=StrategyShort, args=(qlist,), daemon=True).start()
-    Process(target=StrategyMid, args=(qlist,), daemon=True).start()
-    Process(target=StrategyLong, args=(qlist,), daemon=True).start()
-    """
     Process(target=Worker, args=(qlist,), daemon=True).start()
 
     app = QtWidgets.QApplication(sys.argv)

@@ -7,12 +7,14 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utility.setting import db_stg, ui_num
 from utility.static import now, timedelta_sec, thread_decorator
 
+tujagm_divide = 5
+
 
 class StrategyShort:
     def __init__(self, qlist):
         self.windowQ = qlist[0]
         self.workerQ = qlist[1]
-        self.stgsQ = qlist[5]
+        self.stgsQ = qlist[3]
 
         self.list_buy = []
         self.list_sell = []
@@ -36,15 +38,14 @@ class StrategyShort:
                 self.DatabaseLoad()
             elif len(data) == 2:
                 self.UpdateList(data[0], data[1])
-            elif len(data) == 5 and type(data[1]) == int:
-                self.UpdateStrategy(data[0], data[1], data[2], data[3], data[4])
-            elif len(data) == 3:
-                self.BuyStrategy(data[0], data[1], data[2])
-            elif len(data) == 5 and type(data[1]) == str:
+            elif len(data) == 10:
+                self.BuyStrategy(data[0], data[1], data[2], data[3], data[4], data[5],
+                                 data[6], data[7], data[8], data[9])
+            elif len(data) == 5:
                 self.SellStrategy(data[0], data[1], data[2], data[3], data[4])
 
             if now() > self.dict_time['관심종목']:
-                self.df.sort_values(by=['preshort', '비중'], ascending=False, inplace=True)
+                self.df.sort_values(by=['변동성'], ascending=False, inplace=True)
                 self.windowQ.put([ui_num['short'], self.df])
                 self.dict_time['관심종목'] = timedelta_sec(1)
             if now() > self.dict_time['부가정보']:
@@ -55,12 +56,14 @@ class StrategyShort:
         con = sqlite3.connect(db_stg)
         df = pd.read_sql('SELECT * FROM short', con)
         con.close()
-        self.df = df.set_index('index')
-        self.df['현재가'] = 0
-        self.df['시가'] = 0
-        self.df['등락율'] = 0.
-        self.df['체결시간'] = '150000'
-        self.df.sort_values(by=['preshort', '비중'], ascending=False, inplace=True)
+        df = df.set_index('index')
+        df['등락율'] = 0
+        df['현재가'] = 0
+        df['시가'] = 0
+        df['고가'] = 0
+        df['저가'] = 0
+        self.df = df[['등락율', '현재가', '시가', '고가', '저가', '변동성']].copy()
+        self.df.sort_values(by=['변동성'], ascending=False, inplace=True)
         self.windowQ.put([ui_num['short'] + 100, self.df])
 
     def UpdateList(self, gubun, code):
@@ -71,37 +74,36 @@ class StrategyShort:
             if code in self.list_sell:
                 self.list_sell.remove(code)
 
-    def UpdateStrategy(self, code, c, o, per, d):
-        if d != self.df['체결시간'][code]:
-            self.df.at[code, ['현재가', '시가', '등락율', '체결시간']] = c, o, per, d
+    def BuyStrategy(self, code, per, c, o, h, low, dict_name, intrade, injango, batting):
+        prec = self.df['현재가'][code]
+        self.df.at[code, ['등락율', '현재가', '시가', '고가', '저가']] = per, c, o, h, low
 
-    def BuyStrategy(self, dict_name, jangolist, batting):
-        for code in self.df.index:
-            if code not in jangolist:
-                continue
-
-            # 전략 비공개
-
-            bj = self.df['비중'][code]
-            c = self.df['현재가'][code]
-            oc = int(batting * bj * 10 / c)
-            name = dict_name[code]
-            if oc > 0:
-                self.list_buy.append(code)
-                self.workerQ.put(['단기매수', code, name, c, oc])
-
-    def SellStrategy(self, code, name, jc, sp, c):
-        if code in self.list_sell:
+        if code in self.list_buy:
             return
 
         # 전략 비공개
 
-        self.list_sell.append(code)
-        self.workerQ.put(['단기매도', code, name, c, jc])
+        oc = int(batting / tujagm_divide / c)
+        if oc > 0:
+            name = dict_name[code]
+            self.list_buy.append(code)
+            self.workerQ.put(['단기매수', code, name, c, oc])
+
+    def SellStrategy(self, code, name, jc, c, o):
+        if code in self.list_sell:
+            return
+
+        oc = 0
+
+        # 전략 비공개
+
+        if oc > 0:
+            self.list_sell.append(code)
+            self.workerQ.put(['단기매도', code, name, c, jc])
 
     @thread_decorator
     def UpdateInfo(self):
-        info = [7, self.dict_intg['메모리'], self.dict_intg['스레드'], self.dict_intg['시피유']]
+        info = [5, self.dict_intg['메모리'], self.dict_intg['스레드'], self.dict_intg['시피유']]
         self.windowQ.put(info)
         self.UpdateSysinfo()
 

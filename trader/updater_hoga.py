@@ -11,9 +11,9 @@ class UpdaterHoga:
         self.gubun = gubun
         self.windowQ = qlist[0]
         if self.gubun == ui_num['호가P0']:
-            self.hogaQ = qlist[9]
+            self.hogaQ = qlist[7]
         else:
-            self.hogaQ = qlist[10]
+            self.hogaQ = qlist[8]
         self.df_hc = None
         self.df_hg = None
         self.df_so = None

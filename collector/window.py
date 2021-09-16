@@ -3,11 +3,9 @@ import sys
 import sqlite3
 import logging
 from PyQt5 import QtCore
-from worker import Worker
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette
-from updater_tick import UpdaterTick
 from multiprocessing import Process, Queue
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utility.setting import *
@@ -33,16 +31,16 @@ class Window(QtWidgets.QMainWindow):
 
         self.setFont(qfont1)
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setGeometry(int(0 * resize), int(0 * resize), int(692 * resize), int(292 * resize))
+        self.setGeometry(0, 0, 692, 292)
 
         self.lg_tabWidget = QtWidgets.QTabWidget(self)
-        self.lg_tabWidget.setGeometry(int(5 * resize), int(5 * resize), int(682 * resize), int(282 * resize))
+        self.lg_tabWidget.setGeometry(5, 5, 682, 282)
         self.lg_tab = QtWidgets.QWidget()
         self.lg_textEdit = setTextEdit(self.lg_tab)
-        self.lg_textEdit.setGeometry(int(5 * resize), int(5 * resize), int(668 * resize), int(242 * resize))
+        self.lg_textEdit.setGeometry(5, 5, 668, 242)
         self.lg_tabWidget.addTab(self.lg_tab, '틱데이터 저장')
         self.info_label = QtWidgets.QLabel(self)
-        self.info_label.setGeometry(int(105 * resize), int(1 * resize), int(500 * resize), int(30 * resize))
+        self.info_label.setGeometry(105, 1, 500, 30)
 
         self.writer = Writer()
         self.writer.data0.connect(self.UpdateTexedit)
@@ -106,6 +104,9 @@ if __name__ == '__main__':
     windowQ, workerQ, queryQ, tick1Q, tick2Q, tick3Q, tick4Q, tick5Q, tick6Q, tick7Q, tick8Q = \
         Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue(), Queue()
 
+    from worker import Worker
+    from updater_tick import UpdaterTick
+
     Process(target=Query, args=(windowQ, workerQ, queryQ), daemon=True).start()
     Process(target=UpdaterTick, args=(tick1Q, queryQ, workerQ, windowQ), daemon=True).start()
     Process(target=UpdaterTick, args=(tick2Q, queryQ, workerQ, windowQ), daemon=True).start()
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     Process(target=UpdaterTick, args=(tick6Q, queryQ, workerQ, windowQ), daemon=True).start()
     Process(target=UpdaterTick, args=(tick7Q, queryQ, workerQ, windowQ), daemon=True).start()
     Process(target=UpdaterTick, args=(tick8Q, queryQ, workerQ, windowQ), daemon=True).start()
-    Process(target=Worker, args=(windowQ, workerQ, queryQ,
+    Process(target=Worker, args=(windowQ, workerQ,
                                  tick1Q, tick2Q, tick3Q, tick4Q, tick5Q, tick6Q, tick7Q, tick8Q), daemon=True).start()
 
     app = QtWidgets.QApplication(sys.argv)
