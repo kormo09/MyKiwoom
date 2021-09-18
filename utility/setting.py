@@ -1,7 +1,9 @@
 from PyQt5.QtGui import QFont, QColor
+import os
 
 openapi_path = 'D:/OpenAPI'
-system_path = 'D:/PythonProjects/MyKiwoom'
+#system_path = 'D:/PythonProjects/MyKiwoom'
+system_path = ('/').join((os.getcwd().split('\\'))[:-1])              # 자동으로 utility의 상위폴더를 시스템 경로로 설정
 database_path = f'{system_path}/database'
 graph_path = f'{system_path}/backtester/graph'
 db_stg = f'{database_path}/stg.db'
